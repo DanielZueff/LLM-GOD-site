@@ -1,0 +1,311 @@
+/* Общие стили */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Стили для header */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: 2px;
+}
+
+/* Стили для кнопок */
+button, #telegram-link {
+    background-color: #FF6B6B;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 25px;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-decoration: none;
+}
+
+button:hover, #telegram-link:hover {
+    background-color: #FF8787;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+}
+
+#telegram-link i {
+    margin-right: 8px;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.header-buttons button {
+    margin-left: 10px;
+}
+
+/* Стили для main и query-bar */
+main {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+    margin-top: 80px;
+    overflow-y: auto;
+}
+
+#chat-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.query-bar-container {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.query-bar {
+    display: flex;
+    width: 60%;
+    max-width: 500px;
+}
+
+.query-bar input {
+    flex-grow: 1;
+    padding: 15px 20px;
+    border: 2px solid #FF6B6B;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.query-bar input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+/* Стили для сообщений */
+.message {
+    max-width: 70%;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    position: relative;
+}
+
+.user-message {
+    align-self: flex-end;
+    background-color: #DCF8C6;
+    margin-right: 280px;
+}
+
+.ai-message {
+    align-self: flex-start;
+    background-color: #FFFFFF;
+    margin-left: 280px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 8px;
+}
+
+.user-avatar {
+    right: -50px;
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: #fff;
+}
+
+.ai-avatar {
+    left: -50px;
+    background-image: url('https://img.icons8.com/color/96/000000/robot-2.png');
+    background-size: cover;
+}
+
+.copy-button {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    background-color: transparent;
+    color: #999;
+    padding: 5px;
+    font-size: 0.8rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+    color: #FF6B6B;
+}
+
+/* Стили для форматированного текста */
+.message h1, .message h2, .message h3,
+.message h4, .message h5, .message h6 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.message code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.message strong {
+    font-weight: 600;
+}
+
+.message br {
+    display: block;
+    margin: 5px 0;
+}
+
+/* Темная тема */
+body.dark-theme {
+    color: #eee;
+}
+
+body.dark-theme::before {
+    background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+    opacity: 0.9;
+}
+
+body.dark-theme h1 {
+    background: linear-gradient(45deg, #e94560, #0f3460);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.dark-theme button,
+body.dark-theme #telegram-link {
+    background-color: #e94560;
+}
+
+body.dark-theme button:hover,
+body.dark-theme #telegram-link:hover {
+    background-color: #ff6b85;
+}
+
+body.dark-theme .query-bar input {
+    background-color: transparent;
+    color: #eee;
+    border-color: #e94560;
+}
+
+body.dark-theme .query-bar input:focus {
+    box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
+}
+
+body.dark-theme .ai-message {
+    background-color: #16213e;
+    color: #eee;
+}
+
+body.dark-theme .user-message {
+    background-color: #0f3460;
+    color: #eee;
+}
+
+body.dark-theme .copy-button {
+    color: #ccc;
+}
+
+body.dark-theme .copy-button:hover {
+    color: #e94560;
+}
+
+/* Медиа-запрос для адаптивности */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    button, #telegram-link {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .query-bar {
+        width: 90%;
+    }
+
+    .query-bar input {
+        font-size: 1rem;
+    }
+
+    .message {
+        font-size: 1rem;
+        max-width: 80%;
+    }
+}
