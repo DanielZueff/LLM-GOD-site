@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     const queryInput = document.getElementById('query-input');
-    const sendButton = document.getElementById('send-button');
     const chatContainer = document.getElementById('chat-container');
 
     // Theme toggle functionality
@@ -16,11 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') {
             e.preventDefault();
             sendQuery();
-            queryInput.value = '';
         }
     });
 
-    sendButton.addEventListener('click', sendQuery);
+    function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 
     async function sendQuery() {
         const question = queryInput.value.trim();
@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
             ${question}
         `;
         chatContainer.appendChild(userMessage);
+        scrollToBottom();
+
+        // Очищаем поле ввода
+        queryInput.value = '';
 
         // Добавляем сообщение AI (пока пустое)
         const aiMessage = document.createElement('div');
@@ -46,8 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             Ожидание ответа...
         `;
         chatContainer.appendChild(aiMessage);
-
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        scrollToBottom();
 
         try {
             const response = await fetch('/ask', {
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
 
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        scrollToBottom();
     }
 
     function formatText(text) {
