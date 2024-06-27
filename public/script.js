@@ -2,12 +2,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     const queryInput = document.getElementById('query-input');
     const chatContainer = document.getElementById('chat-container');
+    const queryBarContainer = document.querySelector('.query-bar-container');
 
     // Theme toggle functionality
     themeToggle.addEventListener('click', function() {
         document.body.classList.toggle('dark-theme');
         this.querySelector('i').classList.toggle('fa-sun');
         this.querySelector('i').classList.toggle('fa-moon');
+    });
+
+    // Обработчик событий клавиатуры для всей страницы
+    document.body.addEventListener('keydown', function(e) {
+        if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key.length === 1 && !queryInput.matches(':focus')) {
+            e.preventDefault();
+            queryInput.focus();
+            queryInput.value += e.key;
+        }
     });
 
     // Query input handling
@@ -18,8 +28,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Отключение автозаполнения и подсказок
+    queryInput.setAttribute('autocomplete', 'off');
+    queryInput.setAttribute('autofill', 'off');
+
+    // Scroll to bottom functionality
     function scrollToBottom() {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
+    // Показ/скрытие query bar при прокрутке
+    let isAtBottom = false;
+    let ticking = false;
+
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                checkScrollPosition();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    function checkScrollPosition() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        let windowHeight = window.innerHeight;
+        let documentHeight = document.documentElement.scrollHeight;
+
+        isAtBottom = (windowHeight + scrollTop) >= (documentHeight - 20);
+
+        if (isAtBottom) {
+            queryBarContainer.style.opacity = '1';
+            queryBarContainer.style.visibility = 'visible';
+        } else {
+            queryBarContainer.style.opacity = '0';
+            queryBarContainer.style.visibility = 'hidden';
+        }
     }
 
     async function sendQuery() {
@@ -28,6 +76,9 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Пожалуйста, введите более длинный запрос.');
             return;
         }
+
+        // Очищаем input сразу после получения значения
+        queryInput.value = '';
 
         // Добавляем сообщение пользователя
         const userMessage = document.createElement('div');
@@ -38,9 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         chatContainer.appendChild(userMessage);
         scrollToBottom();
-
-        // Очищаем поле ввода
-        queryInput.value = '';
 
         // Добавляем сообщение AI (пока пустое)
         const aiMessage = document.createElement('div');
@@ -67,19 +115,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.choices && data.choices.length > 0 && data.choices[0].message) {
                 const rawText = data.choices[0].message.content;
-                const formattedHtml = formatText(rawText);
+                const formattedHtml = marked.parse(rawText);
                 aiMessage.innerHTML = `
                     <div class="avatar ai-avatar"></div>
-                    ${formattedHtml}
-                    <button class="copy-button" title="Копировать"><i class="fas fa-copy"></i></button>
+                    <div class="message-content">${formattedHtml}</div>
                 `;
-
-                const copyButton = aiMessage.querySelector('.copy-button');
-                copyButton.addEventListener('click', () => copyText(aiMessage));
             } else {
                 aiMessage.innerHTML = `
                     <div class="avatar ai-avatar"></div>
-                    Не удалось получить содержательный ответ.
+                    <div class="message-content">Не удалось получить содержательный ответ.</div>
                 `;
             }
 
@@ -94,38 +138,64 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollToBottom();
     }
 
-    function formatText(text) {
-        // Заменяем переносы строк на <br>
-        text = text.replace(/\n/g, '<br>');
+    function handleAIMessageClick(event) {
+        const message = event.target.closest('.ai-message');
+        if (!message) return;
 
-        // Форматируем заголовки
-        text = text.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-        text = text.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-        text = text.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-        text = text.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
-        text = text.replace(/^##### (.*$)/gim, '<h5>$1</h5>');
-        text = text.replace(/^###### (.*$)/gim, '<h6>$1</h6>');
+        let copyPopup = message.querySelector('.copy-popup');
 
-        // Форматируем жирный текст
-        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        if (!copyPopup) {
+            copyPopup = document.createElement('div');
+            copyPopup.classList.add('copy-popup');
+            copyPopup.innerHTML = `
+                <button>
+                    <i class="fas fa-copy"></i>
+                    Copy
+                </button>
+            `;
+            message.appendChild(copyPopup);
 
-        // Форматируем код
-        text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+            copyPopup.querySelector('button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const textToCopy = message.innerText.replace('Copy', '').trim();
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const button = copyPopup.querySelector('button');
+                    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    }, 500);
+                });
+            });
+        }
 
-        // Форматируем списки
-        text = text.replace(/^\s*(\d+\.|\*|\-)\s/gm, '<br>• ');
-
-        return text;
+        showCopyPopup(copyPopup);
     }
 
-    function copyText(element) {
-        const textToCopy = element.innerText;
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            const copyButton = element.querySelector('.copy-button');
-            copyButton.innerHTML = '<i class="fas fa-check"></i>';
-            setTimeout(() => {
-                copyButton.innerHTML = '<i class="fas fa-copy"></i>';
-            }, 2000);
-        });
+    function showCopyPopup(copyPopup) {
+        copyPopup.classList.add('show');
     }
+
+    function hideCopyPopup(copyPopup) {
+        copyPopup.classList.remove('show');
+    }
+
+    chatContainer.addEventListener('mouseover', (event) => {
+        const message = event.target.closest('.ai-message, .user-message');
+        if (message) {
+            handleAIMessageClick(event);
+        }
+    });
+
+    chatContainer.addEventListener('mouseout', (event) => {
+        const message = event.target.closest('.ai-message, .user-message');
+        if (message) {
+            const copyPopup = message.querySelector('.copy-popup');
+            if (copyPopup) {
+                hideCopyPopup(copyPopup);
+            }
+        }
+    });
+
+    // Инициализация положения query bar
+    checkScrollPosition();
 });
