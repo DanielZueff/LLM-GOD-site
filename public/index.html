@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLM GOD</title>
+  <title>FreeGPT</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css"> </head>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
   <div class="page-wrapper">
     <header>
       <div class="container">
-        <h1>LLM GOD</h1>
+        <h1 id="site-name" class="header-title hidden">FreeGPT</h1>
         <div class="header-buttons">
           <button id="theme-toggle">
             <i class="fas fa-sun"></i>
@@ -21,15 +22,16 @@
       </div>
     </header>
     <main>
-      <div id="chat-container">
-        </div>
+      <div id="center-title" class="center-title">FreeGPT</div>
+      <div id="chat-container" style="display: none;"></div>
       <div class="query-bar-container">
         <div class="query-bar">
-          <input type="text" id="query-input" placeholder="Задайте вопрос..." autofocus>
+          <input type="text" id="query-input" placeholder="Задать вопрос..." autofocus>
         </div>
       </div>
     </main>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

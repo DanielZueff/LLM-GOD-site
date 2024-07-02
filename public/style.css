@@ -40,21 +40,12 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    padding: 20px 0;
+    padding: 30px 0;
     z-index: 1000; /* Убеждаемся, что header выше остального контента */
-    background-color: rgba(255, 255, 255, 0.8); /* Добавляем полупрозрачный фон */
+    background-color: rgba(255, 255, 255, 0.1); /* Добавляем полупрозрачный фон */
 }
 
-.container {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    padding: 0 20px;
-    position: relative;
-}
-
-h1 {
+.header-title {
     font-family: 'Montserrat', sans-serif;
     font-size: 3rem;
     font-weight: 700;
@@ -63,9 +54,68 @@ h1 {
     -webkit-text-fill-color: transparent;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     letter-spacing: 2px;
+    transition: opacity 0.5s ease;
+}
+
+.hidden {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+.visible {
+    opacity: 1 !important;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+}
+
+#site-name {
+    /* Стили для заголовка в header */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.center-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 7rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: 2px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    transition: opacity 0.1s ease;
+}
+
+.header-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    letter-spacing: 2px;
+    transition: all 0.3s ease; /* Изменено для более плавного эффекта */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    cursor: pointer;
+}
+
+.header-title:hover {
+    transform: translateX(-50%) translateY(-1px);
 }
 
 /* Стили для кнопок */
@@ -90,6 +140,10 @@ button:hover {
 .header-buttons {
     display: flex;
     align-items: center;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .header-buttons button {
@@ -98,12 +152,11 @@ button:hover {
 
 /* Стили для main и query-bar */
 main {
-    padding-top: 80px;
+    padding-top: 0px;
     display: flex;
     flex-direction: column;
     height: calc(100vh - 80px);
     margin-top: 80px;
-    overflow-y: auto;
 }
 
 #chat-container {
@@ -112,19 +165,28 @@ main {
     flex-direction: column;
     align-items: center;
     padding: 20px;
+    padding-bottom: 100px; /* Добавляем отступ снизу для query bar */
 }
 
 .query-bar-container {
-    position: sticky;
-    bottom: 0;
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
     width: 100%;
     padding: 20px 0;
     display: flex;
     justify-content: center;
-    /* Добавляем плавный переход для opacity */
-    transition: opacity 0.3s ease-in-out;
-    /* По умолчанию делаем query bar прозрачным */
+    z-index: 1000;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+
+.query-bar-container.hide {
     opacity: 0;
+    visibility: hidden;
 }
 
 .query-bar {
@@ -163,19 +225,117 @@ main:hover + .query-bar-container {
     font-size: 1.2rem;
     line-height: 1.5;
     position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Стили для Markdown */
+.ai-message p {
+    margin-bottom: 10px;
+}
+
+.ai-message h1, .ai-message h2, .ai-message h3,
+.ai-message h4, .ai-message h5, .ai-message h6 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.ai-message pre {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+.ai-message code {
+    font-family: monospace;
+}
+
+.ai-message ul, .ai-message ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.ai-message blockquote {
+    border-left: 4px solid #ccc;
+    padding-left: 10px;
+    margin-left: 0;
+    color: #666;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message {
+    animation: fadeIn 0.5s ease-out;
 }
 
 .user-message {
     align-self: flex-end;
     background-color: #DCF8C6;
-    margin-right: 280px;
+    margin-right: 278px;
+}
+
+.user-message, .ai-message {
+    transition: transform 0.3s ease;
+}
+
+.user-message:hover, .ai-message:hover {
+    transform: translateY(-2px);
 }
 
 .ai-message {
     align-self: flex-start;
     background-color: #FFFFFF;
-    margin-left: 280px;
-    padding-bottom: 30px;
+    margin-left: 278px;
+    transition: transform 0.3s ease;
+}
+
+.ai-message:hover {
+    transform: translateY(-2px);
+}
+
+.copy-popup {
+    position: absolute;
+    left: 0;
+    top: -40px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 8px 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.copy-popup.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.copy-popup button {
+    background-color: transparent;
+    border: none;
+    color: rgba(51, 51, 51, 0.7); /* Полупрозрачный цвет для светлой темы */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0;
+}
+
+.copy-popup button:hover {
+    color: rgba(51, 51, 51, 0.9); /* Полупрозрачный цвет при наведении */
+}
+
+.copy-popup i {
+    margin-right: 8px;
+    font-size: 1.2rem;
 }
 
 .avatar {
@@ -183,8 +343,10 @@ main:hover + .query-bar-container {
     height: 40px;
     border-radius: 50%;
     position: absolute;
-    bottom: 8px;
+    top: 50%;
+    transform: translateY(-50%);
 }
+
 
 .user-avatar {
     right: -50px;
@@ -261,8 +423,29 @@ body.dark-theme {
 }
 
 body.dark-theme::before {
-    background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
-    opacity: 0.9;
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(-60deg,
+        #000000,
+        #05051a,
+        #0a0a25,
+        #100834,
+        #0d1a3d,
+        #000000);
+    background-size: 400% 400%;
+    animation: gradientDark 20s ease infinite;
+    z-index: -1;
+    opacity: 0.95;
+}
+
+@keyframes gradientDark {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 body.dark-theme h1 {
@@ -303,8 +486,19 @@ body.dark-theme .copy-button {
     color: #ccc;
 }
 
-body.dark-theme .copy-button:hover {
-    color: #e94560;
+body.dark-theme .copy-popup {
+    background-color: #16213e;
+    border-color: #0f3460;
+}
+
+body.dark-theme .copy-popup button {
+    background-color: rgba(255, 255, 255, 0);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark-theme .copy-popup button:hover {
+    background-color: rgba(255, 255, 255, 0);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Медиа-запрос для адаптивности */
